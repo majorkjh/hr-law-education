@@ -14,8 +14,10 @@ export function escapeXml(str: string): string {
 /**
  * Generates an HWPX binary (ZIP file) complying strictly with Hancom HWPX specification.
  */
-export function generateHwpx(data: DocumentData): Uint8Array {
+export function generateHwpx(data: DocumentData, fontPreference: 'pretendard' | 'batang' = 'pretendard'): Uint8Array {
   const title = (data.title || '우체국 문화전 수상자 시상식 계획').trim();
+  const fontFaceKo = fontPreference === 'pretendard' ? '프리텐다드' : '바탕';
+  const fontFaceEn = fontPreference === 'pretendard' ? 'Pretendard' : 'Batang';
 
   // 1. mimetype (MUST be first entry, uncompressed application/hwp+zip)
   const mimetype = 'application/hwp+zip';
@@ -75,25 +77,25 @@ export function generateHwpx(data: DocumentData): Uint8Array {
   <hh:refList>
     <hh:fontfaces itemCnt="7">
       <hh:fontface lang="hangul" fontCnt="1">
-        <hh:font id="0" face="바탕" type="TTF" isEmbedded="0"/>
+        <hh:font id="0" face="${fontFaceKo}" type="TTF" isEmbedded="0"/>
       </hh:fontface>
       <hh:fontface lang="latin" fontCnt="1">
-        <hh:font id="0" face="Batang" type="TTF" isEmbedded="0"/>
+        <hh:font id="0" face="${fontFaceEn}" type="TTF" isEmbedded="0"/>
       </hh:fontface>
       <hh:fontface lang="hanja" fontCnt="1">
-        <hh:font id="0" face="바탕" type="TTF" isEmbedded="0"/>
+        <hh:font id="0" face="${fontFaceKo}" type="TTF" isEmbedded="0"/>
       </hh:fontface>
       <hh:fontface lang="japanese" fontCnt="1">
-        <hh:font id="0" face="바탕" type="TTF" isEmbedded="0"/>
+        <hh:font id="0" face="${fontFaceKo}" type="TTF" isEmbedded="0"/>
       </hh:fontface>
       <hh:fontface lang="other" fontCnt="1">
-        <hh:font id="0" face="바탕" type="TTF" isEmbedded="0"/>
+        <hh:font id="0" face="${fontFaceKo}" type="TTF" isEmbedded="0"/>
       </hh:fontface>
       <hh:fontface lang="symbol" fontCnt="1">
-        <hh:font id="0" face="바탕" type="TTF" isEmbedded="0"/>
+        <hh:font id="0" face="${fontFaceKo}" type="TTF" isEmbedded="0"/>
       </hh:fontface>
       <hh:fontface lang="user" fontCnt="1">
-        <hh:font id="0" face="바탕" type="TTF" isEmbedded="0"/>
+        <hh:font id="0" face="${fontFaceKo}" type="TTF" isEmbedded="0"/>
       </hh:fontface>
     </hh:fontfaces>
     <hh:borderFills itemCnt="3">

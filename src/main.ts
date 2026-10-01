@@ -14,6 +14,15 @@ let docData: DocumentData = loadDocumentData();
 let activeMobileTab: 'form' | 'preview' = 'form';
 let zoomLevel = 100;
 let isDarkMode = false;
+let docFont: 'pretendard' | 'batang' = 'pretendard';
+// Force Pretendard as standard font across all sections
+const savedDocFont = localStorage.getItem('epost_doc_font');
+if (savedDocFont === 'batang') {
+  localStorage.setItem('epost_doc_font', 'pretendard');
+  docFont = 'pretendard';
+} else if (savedDocFont) {
+  docFont = savedDocFont as 'pretendard' | 'batang';
+}
 
 // Initialize Theme
 function initTheme() {
@@ -139,9 +148,9 @@ function renderCeremonyRowsInput() {
 
     rowEl.innerHTML = `
       <div class="w-7 text-center text-xs font-semibold text-slate-400 dark:text-slate-500">${index + 1}</div>
-      <input type="text" class="row-time w-28 text-xs px-2.5 py-1.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-100 rounded focus:border-red-600 focus:outline-none" placeholder="14:00~14:05" value="${escapeHtml(row.time)}">
-      <input type="text" class="row-content flex-1 text-xs px-2.5 py-1.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-100 rounded focus:border-red-600 focus:outline-none" placeholder="식순 내용" value="${escapeHtml(row.content)}">
-      <input type="text" class="row-remarks w-28 text-xs px-2.5 py-1.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-100 rounded focus:border-red-600 focus:outline-none" placeholder="사회자 등" value="${escapeHtml(row.remarks)}">
+      <input type="text" class="row-time font-pretendard w-28 text-xs px-2.5 py-1.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-100 rounded focus:border-red-600 focus:outline-none" placeholder="14:00~14:05" value="${escapeHtml(row.time)}">
+      <input type="text" class="row-content font-pretendard flex-1 text-xs px-2.5 py-1.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-100 rounded focus:border-red-600 focus:outline-none" placeholder="식순 내용" value="${escapeHtml(row.content)}">
+      <input type="text" class="row-remarks font-pretendard w-28 text-xs px-2.5 py-1.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-100 rounded focus:border-red-600 focus:outline-none" placeholder="사회자 등" value="${escapeHtml(row.remarks)}">
       <div class="flex items-center gap-1 shrink-0">
         <button type="button" class="btn-move-up p-1 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 disabled:opacity-30 rounded hover:bg-slate-200 dark:hover:bg-slate-700" title="위로 이동" ${index === 0 ? 'disabled' : ''}>
           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>
@@ -223,6 +232,9 @@ function renderPreview() {
   const paper = document.getElementById('a4-paper');
   if (!paper) return;
 
+  const fontClass = docFont === 'batang' ? 'font-batang' : 'font-pretendard';
+  paper.className = `w-[210mm] min-h-[297mm] p-[20mm] bg-white text-slate-900 shadow-xl shadow-slate-300/80 dark:shadow-black/70 ring-1 ring-slate-300/60 dark:ring-slate-700 transition-shadow ${fontClass}`;
+
   const title = docData.title.trim() || '우체국 문화전 수상자 시상식 계획';
 
   // Section 1: 목적
@@ -234,20 +246,20 @@ function renderPreview() {
       const isSub = line.startsWith('-');
       const clean = line.replace(/^[○•\-\*\s]+/, '').trim();
       return isSub
-        ? `<div class="doc-subitem-indent leading-relaxed text-sm">- ${escapeHtml(clean)}</div>`
-        : `<div class="doc-item-indent leading-relaxed text-sm font-normal">○ ${escapeHtml(clean)}</div>`;
+        ? `<div class="doc-subitem-indent leading-relaxed text-sm font-pretendard">- ${escapeHtml(clean)}</div>`
+        : `<div class="doc-item-indent leading-relaxed text-sm font-normal font-pretendard">○ ${escapeHtml(clean)}</div>`;
     }).join('');
     purposeHtml = `
-      <div class="mb-6">
-        <h2 class="text-base font-bold mb-2">1. 목적</h2>
-        <div class="space-y-1">${itemLines}</div>
+      <div class="mb-6 font-pretendard">
+        <h2 class="text-base font-bold mb-2 font-pretendard">1. 목적</h2>
+        <div class="space-y-1 font-pretendard">${itemLines}</div>
       </div>
     `;
   } else {
     purposeHtml = `
-      <div class="mb-6 empty-section-guide">
-        <h2 class="text-base font-bold text-slate-400 mb-1">1. 목적</h2>
-        <p class="text-xs text-slate-400 italic bg-slate-50 p-2 border border-dashed border-slate-200 rounded">[1. 목적 내용이 비어 있습니다. 작성 시 반영됩니다]</p>
+      <div class="mb-6 empty-section-guide font-pretendard">
+        <h2 class="text-base font-bold text-slate-400 mb-1 font-pretendard">1. 목적</h2>
+        <p class="text-xs text-slate-400 italic bg-slate-50 p-2 border border-dashed border-slate-200 rounded font-pretendard">[1. 목적 내용이 비어 있습니다. 작성 시 반영됩니다]</p>
       </div>
     `;
   }
@@ -274,7 +286,7 @@ function renderPreview() {
 
     const ovLines = fields
       .filter(f => f.value && f.value.trim())
-      .map(f => `<div class="doc-item-indent leading-relaxed text-sm font-normal">○ ${escapeHtml(f.label)} : ${escapeHtml(f.value.trim())}</div>`);
+      .map(f => `<div class="doc-item-indent leading-relaxed text-sm font-normal font-pretendard">○ ${escapeHtml(f.label)} : ${escapeHtml(f.value.trim())}</div>`);
 
     if (ov.extra && ov.extra.trim()) {
       const extraLines = ov.extra.split('\n').map(l => l.trim()).filter(Boolean);
@@ -283,23 +295,23 @@ function renderPreview() {
         const clean = line.replace(/^[○•\-\*\s]+/, '').trim();
         ovLines.push(
           isSub
-            ? `<div class="doc-subitem-indent leading-relaxed text-sm">- ${escapeHtml(clean)}</div>`
-            : `<div class="doc-item-indent leading-relaxed text-sm font-normal">○ ${escapeHtml(clean)}</div>`
+            ? `<div class="doc-subitem-indent leading-relaxed text-sm font-pretendard">- ${escapeHtml(clean)}</div>`
+            : `<div class="doc-item-indent leading-relaxed text-sm font-normal font-pretendard">○ ${escapeHtml(clean)}</div>`
         );
       }
     }
 
     overviewHtml = `
-      <div class="mb-6">
-        <h2 class="text-base font-bold mb-2">2. 개요</h2>
-        <div class="space-y-1">${ovLines.join('')}</div>
+      <div class="mb-6 font-pretendard">
+        <h2 class="text-base font-bold mb-2 font-pretendard">2. 개요</h2>
+        <div class="space-y-1 font-pretendard">${ovLines.join('')}</div>
       </div>
     `;
   } else {
     overviewHtml = `
-      <div class="mb-6 empty-section-guide">
-        <h2 class="text-base font-bold text-slate-400 mb-1">2. 개요</h2>
-        <p class="text-xs text-slate-400 italic bg-slate-50 p-2 border border-dashed border-slate-200 rounded">[2. 개요 내용이 비어 있습니다. 작성 시 반영됩니다]</p>
+      <div class="mb-6 empty-section-guide font-pretendard">
+        <h2 class="text-base font-bold text-slate-400 mb-1 font-pretendard">2. 개요</h2>
+        <p class="text-xs text-slate-400 italic bg-slate-50 p-2 border border-dashed border-slate-200 rounded font-pretendard">[2. 개요 내용이 비어 있습니다. 작성 시 반영됩니다]</p>
       </div>
     `;
   }
@@ -313,20 +325,20 @@ function renderPreview() {
       const isSub = line.startsWith('-');
       const clean = line.replace(/^[○•\-\*\s]+/, '').trim();
       return isSub
-        ? `<div class="doc-subitem-indent leading-relaxed text-sm">- ${escapeHtml(clean)}</div>`
-        : `<div class="doc-item-indent leading-relaxed text-sm font-normal">○ ${escapeHtml(clean)}</div>`;
+        ? `<div class="doc-subitem-indent leading-relaxed text-sm font-pretendard">- ${escapeHtml(clean)}</div>`
+        : `<div class="doc-item-indent leading-relaxed text-sm font-normal font-pretendard">○ ${escapeHtml(clean)}</div>`;
     }).join('');
     detailsHtml = `
-      <div class="mb-6">
-        <h2 class="text-base font-bold mb-2">3. 세부내용</h2>
-        <div class="space-y-1">${itemLines}</div>
+      <div class="mb-6 font-pretendard">
+        <h2 class="text-base font-bold mb-2 font-pretendard">3. 세부내용</h2>
+        <div class="space-y-1 font-pretendard">${itemLines}</div>
       </div>
     `;
   } else {
     detailsHtml = `
-      <div class="mb-6 empty-section-guide">
-        <h2 class="text-base font-bold text-slate-400 mb-1">3. 세부내용</h2>
-        <p class="text-xs text-slate-400 italic bg-slate-50 p-2 border border-dashed border-slate-200 rounded">[3. 세부내용이 비어 있습니다. 작성 시 반영됩니다]</p>
+      <div class="mb-6 empty-section-guide font-pretendard">
+        <h2 class="text-base font-bold text-slate-400 mb-1 font-pretendard">3. 세부내용</h2>
+        <p class="text-xs text-slate-400 italic bg-slate-50 p-2 border border-dashed border-slate-200 rounded font-pretendard">[3. 세부내용이 비어 있습니다. 작성 시 반영됩니다]</p>
       </div>
     `;
   }
@@ -336,25 +348,25 @@ function renderPreview() {
   let ceremonyHtml = '';
   if (validRows.length > 0) {
     const tableRows = validRows.map(r => `
-      <tr class="border-b border-slate-300">
-        <td class="py-2 px-3 text-center text-xs border-r border-slate-300 whitespace-nowrap font-medium">${escapeHtml(r.time)}</td>
-        <td class="py-2 px-3 text-left text-xs border-r border-slate-300">${escapeHtml(r.content)}</td>
-        <td class="py-2 px-3 text-center text-xs whitespace-nowrap">${escapeHtml(r.remarks)}</td>
+      <tr class="border-b border-slate-300 font-pretendard">
+        <td class="py-2 px-3 text-center text-xs border-r border-slate-300 whitespace-nowrap font-medium font-pretendard">${escapeHtml(r.time)}</td>
+        <td class="py-2 px-3 text-left text-xs border-r border-slate-300 font-pretendard">${escapeHtml(r.content)}</td>
+        <td class="py-2 px-3 text-center text-xs whitespace-nowrap font-pretendard">${escapeHtml(r.remarks)}</td>
       </tr>
     `).join('');
 
     ceremonyHtml = `
-      <div class="mb-6">
-        <h2 class="text-base font-bold mb-2">4. 시상식 순서</h2>
-        <table class="w-full border-collapse border border-slate-400 text-left">
+      <div class="mb-6 font-pretendard">
+        <h2 class="text-base font-bold mb-2 font-pretendard">4. 시상식 순서</h2>
+        <table class="w-full border-collapse border border-slate-400 text-left font-pretendard">
           <thead>
-            <tr class="bg-slate-200 border-b border-slate-400">
-              <th class="py-2 px-3 text-center text-xs font-bold border-r border-slate-400 w-[20%]">시 간</th>
-              <th class="py-2 px-3 text-center text-xs font-bold border-r border-slate-400 w-[55%]">내 용</th>
-              <th class="py-2 px-3 text-center text-xs font-bold w-[25%]">담당 · 비고</th>
+            <tr class="bg-slate-200 border-b border-slate-400 font-pretendard">
+              <th class="py-2 px-3 text-center text-xs font-bold border-r border-slate-400 w-[20%] font-pretendard">시 간</th>
+              <th class="py-2 px-3 text-center text-xs font-bold border-r border-slate-400 w-[55%] font-pretendard">내 용</th>
+              <th class="py-2 px-3 text-center text-xs font-bold w-[25%] font-pretendard">담당 · 비고</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody class="font-pretendard">
             ${tableRows}
           </tbody>
         </table>
@@ -362,9 +374,9 @@ function renderPreview() {
     `;
   } else {
     ceremonyHtml = `
-      <div class="mb-6 empty-section-guide">
-        <h2 class="text-base font-bold text-slate-400 mb-1">4. 시상식 순서</h2>
-        <p class="text-xs text-slate-400 italic bg-slate-50 p-2 border border-dashed border-slate-200 rounded">[4. 시상식 순서가 비어 있습니다. '기본 식순 넣기'를 눌러보세요]</p>
+      <div class="mb-6 empty-section-guide font-pretendard">
+        <h2 class="text-base font-bold text-slate-400 mb-1 font-pretendard">4. 시상식 순서</h2>
+        <p class="text-xs text-slate-400 italic bg-slate-50 p-2 border border-dashed border-slate-200 rounded font-pretendard">[4. 시상식 순서가 비어 있습니다. '기본 식순 넣기'를 눌러보세요]</p>
       </div>
     `;
   }
@@ -378,32 +390,32 @@ function renderPreview() {
       const isSub = line.startsWith('-');
       const clean = line.replace(/^[○•\-\*\s]+/, '').trim();
       return isSub
-        ? `<div class="doc-subitem-indent leading-relaxed text-sm">- ${escapeHtml(clean)}</div>`
-        : `<div class="doc-item-indent leading-relaxed text-sm font-normal">○ ${escapeHtml(clean)}</div>`;
+        ? `<div class="doc-subitem-indent leading-relaxed text-sm font-pretendard">- ${escapeHtml(clean)}</div>`
+        : `<div class="doc-item-indent leading-relaxed text-sm font-normal font-pretendard">○ ${escapeHtml(clean)}</div>`;
     }).join('');
     futureHtml = `
-      <div class="mb-4">
-        <h2 class="text-base font-bold mb-2">5. 향후 계획</h2>
-        <div class="space-y-1">${itemLines}</div>
+      <div class="mb-4 font-pretendard">
+        <h2 class="text-base font-bold mb-2 font-pretendard">5. 향후 계획</h2>
+        <div class="space-y-1 font-pretendard">${itemLines}</div>
       </div>
     `;
   } else {
     futureHtml = `
-      <div class="mb-4 empty-section-guide">
-        <h2 class="text-base font-bold text-slate-400 mb-1">5. 향후 계획</h2>
-        <p class="text-xs text-slate-400 italic bg-slate-50 p-2 border border-dashed border-slate-200 rounded">[5. 향후 계획 내용이 비어 있습니다. 작성 시 반영됩니다]</p>
+      <div class="mb-4 empty-section-guide font-pretendard">
+        <h2 class="text-base font-bold text-slate-400 mb-1 font-pretendard">5. 향후 계획</h2>
+        <p class="text-xs text-slate-400 italic bg-slate-50 p-2 border border-dashed border-slate-200 rounded font-pretendard">[5. 향후 계획 내용이 비어 있습니다. 작성 시 반영됩니다]</p>
       </div>
     `;
   }
 
   paper.innerHTML = `
     <!-- Document Title -->
-    <div class="text-center pt-2 pb-8">
-      <h1 class="text-2xl font-bold tracking-tight inline-block border-b-2 border-slate-900 pb-1.5 px-4">${escapeHtml(title)}</h1>
+    <div class="text-center pt-2 pb-8 font-pretendard">
+      <h1 class="text-2xl font-bold tracking-tight inline-block border-b-2 border-slate-900 pb-1.5 px-4 font-pretendard">${escapeHtml(title)}</h1>
     </div>
 
     <!-- Document Body Sections -->
-    <div class="doc-body font-doc">
+    <div class="doc-body font-pretendard ${docFont === 'batang' ? 'font-batang' : 'font-pretendard'}">
       ${purposeHtml}
       ${overviewHtml}
       ${detailsHtml}
@@ -521,7 +533,7 @@ function handleExportPdf() {
 
 function handleExportHwpx() {
   try {
-    const hwpxBytes = generateHwpx(docData);
+    const hwpxBytes = generateHwpx(docData, docFont);
     const blob = new Blob([hwpxBytes as unknown as BlobPart], { type: 'application/hwp+zip' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -676,9 +688,9 @@ function initApp() {
           <div class="space-y-1.5">
             <div class="flex items-center gap-2">
               <span id="status-sec-0" class="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-400 flex items-center justify-center text-xs">·</span>
-              <label for="input-title" class="text-sm font-bold text-slate-800 dark:text-slate-200"><span class="text-[#D2232A] dark:text-red-400">0.</span> 문서 제목</label>
+              <label for="input-title" class="text-sm font-bold text-slate-800 dark:text-slate-200 font-pretendard"><span class="text-[#D2232A] dark:text-red-400">0.</span> 문서 제목</label>
             </div>
-            <input type="text" id="input-title" class="w-full text-sm px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 rounded-md focus:bg-white focus:dark:bg-slate-950 focus:border-[#D2232A] focus:outline-none focus:ring-1 focus:ring-[#D2232A]" value="${escapeHtml(docData.title)}" placeholder="우체국 문화전 수상자 시상식 계획" />
+            <input type="text" id="input-title" class="w-full text-sm font-pretendard px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 rounded-md focus:bg-white focus:dark:bg-slate-950 focus:border-[#D2232A] focus:outline-none focus:ring-1 focus:ring-[#D2232A]" value="${escapeHtml(docData.title)}" placeholder="우체국 문화전 수상자 시상식 계획" />
           </div>
 
           <hr class="border-slate-100 dark:border-slate-700" />
@@ -688,11 +700,11 @@ function initApp() {
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
                 <span id="status-sec-1" class="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-400 flex items-center justify-center text-xs">·</span>
-                <label for="input-purpose" class="text-sm font-bold text-slate-800 dark:text-slate-200"><span class="text-[#D2232A] dark:text-red-400">1.</span> 목적</label>
+                <label for="input-purpose" class="text-sm font-bold text-slate-800 dark:text-slate-200 font-pretendard"><span class="text-[#D2232A] dark:text-red-400">1.</span> 목적</label>
               </div>
-              <span class="text-[11px] text-slate-500 dark:text-slate-400">한 줄=한 항목, '-'로 시작하면 하위 항목</span>
+              <span class="text-[11px] text-slate-500 dark:text-slate-400 font-pretendard">한 줄=한 항목, '-'로 시작하면 하위 항목</span>
             </div>
-            <textarea id="input-purpose" rows="3" class="w-full text-xs font-mono px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 rounded-md focus:bg-white focus:dark:bg-slate-950 focus:border-[#D2232A] focus:outline-none focus:ring-1 focus:ring-[#D2232A] leading-relaxed" placeholder="미래 세대의 따뜻한 정서 함양과 문화예술 창작 활동 지원&#10;- 어린이 및 청소년의 창의적 표현력 계발 및 우정 문화 확산">${escapeHtml(docData.purpose)}</textarea>
+            <textarea id="input-purpose" rows="3" class="w-full text-xs font-pretendard px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 rounded-md focus:bg-white focus:dark:bg-slate-950 focus:border-[#D2232A] focus:outline-none focus:ring-1 focus:ring-[#D2232A] leading-relaxed" placeholder="미래 세대의 따뜻한 정서 함양과 문화예술 창작 활동 지원&#10;- 어린이 및 청소년의 창의적 표현력 계발 및 우정 문화 확산">${escapeHtml(docData.purpose)}</textarea>
           </div>
 
           <hr class="border-slate-100 dark:border-slate-700" />
@@ -702,45 +714,45 @@ function initApp() {
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
                 <span id="status-sec-2" class="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-400 flex items-center justify-center text-xs">·</span>
-                <label class="text-sm font-bold text-slate-800 dark:text-slate-200"><span class="text-[#D2232A] dark:text-red-400">2.</span> 개요</label>
+                <label class="text-sm font-bold text-slate-800 dark:text-slate-200 font-pretendard"><span class="text-[#D2232A] dark:text-red-400">2.</span> 개요</label>
               </div>
-              <span class="text-[11px] text-slate-500 dark:text-slate-400">비워둔 항목은 문서에서 자동 제외</span>
+              <span class="text-[11px] text-slate-500 dark:text-slate-400 font-pretendard">비워둔 항목은 문서에서 자동 제외</span>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label for="input-event-name" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">행사명</label>
-                <input type="text" id="input-event-name" class="w-full text-xs px-2.5 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 rounded focus:bg-white focus:dark:bg-slate-950 focus:border-[#D2232A] focus:outline-none" value="${escapeHtml(docData.overview.eventName)}" placeholder="제34회 우체국 문화전 시상식" />
+                <label for="input-event-name" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 font-pretendard">행사명</label>
+                <input type="text" id="input-event-name" class="w-full text-xs font-pretendard px-2.5 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 rounded focus:bg-white focus:dark:bg-slate-950 focus:border-[#D2232A] focus:outline-none" value="${escapeHtml(docData.overview.eventName)}" placeholder="제34회 우체국 문화전 시상식" />
               </div>
               <div>
-                <label for="input-date-time" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">일시</label>
-                <input type="text" id="input-date-time" class="w-full text-xs px-2.5 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 rounded focus:bg-white focus:dark:bg-slate-950 focus:border-[#D2232A] focus:outline-none" value="${escapeHtml(docData.overview.dateTime)}" placeholder="2026. 10. 15.(목) 14:00" />
+                <label for="input-date-time" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 font-pretendard">일시</label>
+                <input type="text" id="input-date-time" class="w-full text-xs font-pretendard px-2.5 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 rounded focus:bg-white focus:dark:bg-slate-950 focus:border-[#D2232A] focus:outline-none" value="${escapeHtml(docData.overview.dateTime)}" placeholder="2026. 10. 15.(목) 14:00" />
               </div>
               <div>
-                <label for="input-location" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">장소</label>
-                <input type="text" id="input-location" class="w-full text-xs px-2.5 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 rounded focus:bg-white focus:dark:bg-slate-950 focus:border-[#D2232A] focus:outline-none" value="${escapeHtml(docData.overview.location)}" placeholder="우정사업본부 대강당" />
+                <label for="input-location" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 font-pretendard">장소</label>
+                <input type="text" id="input-location" class="w-full text-xs font-pretendard px-2.5 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 rounded focus:bg-white focus:dark:bg-slate-950 focus:border-[#D2232A] focus:outline-none" value="${escapeHtml(docData.overview.location)}" placeholder="우정사업본부 대강당" />
               </div>
               <div>
-                <label for="input-target" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">대상</label>
-                <input type="text" id="input-target" class="w-full text-xs px-2.5 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 rounded focus:bg-white focus:dark:bg-slate-950 focus:border-[#D2232A] focus:outline-none" value="${escapeHtml(docData.overview.target)}" placeholder="수상자 및 가족" />
+                <label for="input-target" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 font-pretendard">대상</label>
+                <input type="text" id="input-target" class="w-full text-xs font-pretendard px-2.5 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 rounded focus:bg-white focus:dark:bg-slate-950 focus:border-[#D2232A] focus:outline-none" value="${escapeHtml(docData.overview.target)}" placeholder="수상자 및 가족" />
               </div>
               <div>
-                <label for="input-awardee-count" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">수상 인원</label>
-                <input type="text" id="input-awardee-count" class="w-full text-xs px-2.5 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 rounded focus:bg-white focus:dark:bg-slate-950 focus:border-[#D2232A] focus:outline-none" value="${escapeHtml(docData.overview.awardeeCount)}" placeholder="90명 이내" />
+                <label for="input-awardee-count" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 font-pretendard">수상 인원</label>
+                <input type="text" id="input-awardee-count" class="w-full text-xs font-pretendard px-2.5 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 rounded focus:bg-white focus:dark:bg-slate-950 focus:border-[#D2232A] focus:outline-none" value="${escapeHtml(docData.overview.awardeeCount)}" placeholder="90명 이내" />
               </div>
               <div>
-                <label for="input-attendee-count" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">참석 예정</label>
-                <input type="text" id="input-attendee-count" class="w-full text-xs px-2.5 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 rounded focus:bg-white focus:dark:bg-slate-950 focus:border-[#D2232A] focus:outline-none" value="${escapeHtml(docData.overview.attendeeCount)}" placeholder="50~60명 내외" />
+                <label for="input-attendee-count" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 font-pretendard">참석 예정</label>
+                <input type="text" id="input-attendee-count" class="w-full text-xs font-pretendard px-2.5 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 rounded focus:bg-white focus:dark:bg-slate-950 focus:border-[#D2232A] focus:outline-none" value="${escapeHtml(docData.overview.attendeeCount)}" placeholder="50~60명 내외" />
               </div>
               <div class="sm:col-span-2">
-                <label for="input-host" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">주최 · 주관</label>
-                <input type="text" id="input-host" class="w-full text-xs px-2.5 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 rounded focus:bg-white focus:dark:bg-slate-950 focus:border-[#D2232A] focus:outline-none" value="${escapeHtml(docData.overview.host)}" placeholder="우정사업본부" />
+                <label for="input-host" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 font-pretendard">주최 · 주관</label>
+                <input type="text" id="input-host" class="w-full text-xs font-pretendard px-2.5 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 rounded focus:bg-white focus:dark:bg-slate-950 focus:border-[#D2232A] focus:outline-none" value="${escapeHtml(docData.overview.host)}" placeholder="우정사업본부" />
               </div>
             </div>
 
             <div>
-              <label for="input-extra" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">그 밖의 개요 (여러 줄)</label>
-              <textarea id="input-extra" rows="2" class="w-full text-xs font-mono px-2.5 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 rounded focus:bg-white focus:dark:bg-slate-950 focus:border-[#D2232A] focus:outline-none leading-relaxed" placeholder="행사장 내 수상작 특별 전시 부스 운영&#10;- 참석 가족 편의를 위한 다과 제공">${escapeHtml(docData.overview.extra)}</textarea>
+              <label for="input-extra" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 font-pretendard">그 밖의 개요 (여러 줄)</label>
+              <textarea id="input-extra" rows="2" class="w-full text-xs font-pretendard px-2.5 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 rounded focus:bg-white focus:dark:bg-slate-950 focus:border-[#D2232A] focus:outline-none leading-relaxed" placeholder="행사장 내 수상작 특별 전시 부스 운영&#10;- 참석 가족 편의를 위한 다과 제공">${escapeHtml(docData.overview.extra)}</textarea>
             </div>
           </div>
 
@@ -751,11 +763,11 @@ function initApp() {
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
                 <span id="status-sec-3" class="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-400 flex items-center justify-center text-xs">·</span>
-                <label for="input-details" class="text-sm font-bold text-slate-800 dark:text-slate-200"><span class="text-[#D2232A] dark:text-red-400">3.</span> 세부내용</label>
+                <label for="input-details" class="text-sm font-bold text-slate-800 dark:text-slate-200 font-pretendard"><span class="text-[#D2232A] dark:text-red-400">3.</span> 세부내용</label>
               </div>
-              <span class="text-[11px] text-slate-500 dark:text-slate-400">한 줄=한 항목, '-'로 시작하면 하위 항목</span>
+              <span class="text-[11px] text-slate-500 dark:text-slate-400 font-pretendard">한 줄=한 항목, '-'로 시작하면 하위 항목</span>
             </div>
-            <textarea id="input-details" rows="4" class="w-full text-xs font-mono px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 rounded-md focus:bg-white focus:dark:bg-slate-950 focus:border-[#D2232A] focus:outline-none focus:ring-1 focus:ring-[#D2232A] leading-relaxed" placeholder="부문별 우수작 시상 및 부상 수여&#10;- 그림 부문: 대상 4명, 최우수상 8명 등&#10;- 글짓기 부문: 대상 4명, 최우수상 8명 등">${escapeHtml(docData.details)}</textarea>
+            <textarea id="input-details" rows="4" class="w-full text-xs font-pretendard px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 rounded-md focus:bg-white focus:dark:bg-slate-950 focus:border-[#D2232A] focus:outline-none focus:ring-1 focus:ring-[#D2232A] leading-relaxed" placeholder="부문별 우수작 시상 및 부상 수여&#10;- 그림 부문: 대상 4명, 최우수상 8명 등&#10;- 글짓기 부문: 대상 4명, 최우수상 8명 등">${escapeHtml(docData.details)}</textarea>
           </div>
 
           <hr class="border-slate-100 dark:border-slate-700" />
@@ -765,20 +777,20 @@ function initApp() {
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
                 <span id="status-sec-4" class="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-400 flex items-center justify-center text-xs">·</span>
-                <label class="text-sm font-bold text-slate-800 dark:text-slate-200"><span class="text-[#D2232A] dark:text-red-400">4.</span> 시상식 순서</label>
+                <label class="text-sm font-bold text-slate-800 dark:text-slate-200 font-pretendard"><span class="text-[#D2232A] dark:text-red-400">4.</span> 시상식 순서</label>
               </div>
               <div class="flex items-center gap-1.5">
-                <button type="button" id="btn-default-schedule" class="text-xs px-2.5 py-1 font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-[#D2232A] dark:hover:text-red-400 hover:border-red-300 dark:hover:border-red-800 border border-slate-300 dark:border-slate-600 rounded transition-colors" title="일시 입력값 기준으로 기본 식순 시간 자동 계산">
+                <button type="button" id="btn-default-schedule" class="text-xs font-pretendard px-2.5 py-1 font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-[#D2232A] dark:hover:text-red-400 hover:border-red-300 dark:hover:border-red-800 border border-slate-300 dark:border-slate-600 rounded transition-colors" title="일시 입력값 기준으로 기본 식순 시간 자동 계산">
                   기본 식순 넣기
                 </button>
-                <button type="button" id="btn-add-ceremony-row" class="text-xs px-2.5 py-1 font-semibold text-[#D2232A] dark:text-red-400 bg-red-50 dark:bg-red-950/60 hover:bg-red-100 dark:hover:bg-red-900/60 border border-red-200 dark:border-red-800/80 rounded transition-colors">
+                <button type="button" id="btn-add-ceremony-row" class="text-xs font-pretendard px-2.5 py-1 font-semibold text-[#D2232A] dark:text-red-400 bg-red-50 dark:bg-red-950/60 hover:bg-red-100 dark:hover:bg-red-900/60 border border-red-200 dark:border-red-800/80 rounded transition-colors">
                   + 행 추가
                 </button>
               </div>
             </div>
 
             <!-- Table Rows Input List -->
-            <div id="ceremony-rows-container" class="space-y-2"></div>
+            <div id="ceremony-rows-container" class="space-y-2 font-pretendard"></div>
           </div>
 
           <hr class="border-slate-100 dark:border-slate-700" />
@@ -788,11 +800,11 @@ function initApp() {
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
                 <span id="status-sec-5" class="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-400 flex items-center justify-center text-xs">·</span>
-                <label for="input-future-plans" class="text-sm font-bold text-slate-800 dark:text-slate-200"><span class="text-[#D2232A] dark:text-red-400">5.</span> 향후 계획</label>
+                <label for="input-future-plans" class="text-sm font-bold text-slate-800 dark:text-slate-200 font-pretendard"><span class="text-[#D2232A] dark:text-red-400">5.</span> 향후 계획</label>
               </div>
-              <span class="text-[11px] text-slate-500 dark:text-slate-400">한 줄=한 항목, '-'로 시작하면 하위 항목</span>
+              <span class="text-[11px] text-slate-500 dark:text-slate-400 font-pretendard">한 줄=한 항목, '-'로 시작하면 하위 항목</span>
             </div>
-            <textarea id="input-future-plans" rows="3" class="w-full text-xs font-mono px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 rounded-md focus:bg-white focus:dark:bg-slate-950 focus:border-[#D2232A] focus:outline-none focus:ring-1 focus:ring-[#D2232A] leading-relaxed" placeholder="시상식 결과 보고 및 보도자료 배포: 2026. 10. 16.(금)&#10;- 수상작 e-작품집 제작 및 누리집 게시">${escapeHtml(docData.futurePlans)}</textarea>
+            <textarea id="input-future-plans" rows="3" class="w-full text-xs font-pretendard px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 rounded-md focus:bg-white focus:dark:bg-slate-950 focus:border-[#D2232A] focus:outline-none focus:ring-1 focus:ring-[#D2232A] leading-relaxed" placeholder="시상식 결과 보고 및 보도자료 배포: 2026. 10. 16.(금)&#10;- 수상작 e-작품집 제작 및 누리집 게시">${escapeHtml(docData.futurePlans)}</textarea>
           </div>
         </form>
       </section>
@@ -801,9 +813,15 @@ function initApp() {
       <section id="preview-wrapper" class="lg:col-span-6 flex flex-col items-center ${activeMobileTab === 'form' ? 'hidden lg:flex' : 'flex'}">
         <!-- Preview Control Ribbon -->
         <div class="w-full flex items-center justify-between px-3 py-2 mb-3 bg-slate-200/80 dark:bg-slate-800/90 dark:border dark:border-slate-700 rounded-md text-xs text-slate-600 dark:text-slate-300 no-print transition-colors">
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2.5">
             <span class="font-bold text-slate-800 dark:text-slate-100">A4 실시간 미리보기</span>
-            <span class="text-[11px] text-slate-500 dark:text-slate-400">바탕체 (Batang)</span>
+            <div class="flex items-center gap-1.5 bg-white dark:bg-slate-900 px-2 py-0.5 rounded border border-slate-300 dark:border-slate-700 shadow-2xs">
+              <label for="select-doc-font" class="text-[11px] text-slate-500 dark:text-slate-400">글꼴:</label>
+              <select id="select-doc-font" class="text-[11px] font-semibold text-slate-800 dark:text-slate-200 bg-transparent focus:outline-none cursor-pointer">
+                <option value="pretendard" ${docFont === 'pretendard' ? 'selected' : ''}>프리텐다드 (기본)</option>
+                <option value="batang" ${docFont === 'batang' ? 'selected' : ''}>바탕체</option>
+              </select>
+            </div>
           </div>
           <div class="flex items-center gap-1.5">
             <button id="btn-zoom-out" type="button" class="p-1 hover:bg-slate-300 dark:hover:bg-slate-700 rounded text-slate-700 dark:text-slate-200" title="축소">
@@ -1018,6 +1036,15 @@ function initApp() {
 
   document.getElementById('btn-zoom-in')?.addEventListener('click', () => updateZoom(zoomLevel + 10));
   document.getElementById('btn-zoom-out')?.addEventListener('click', () => updateZoom(zoomLevel - 10));
+
+  // Document font selector
+  const selectDocFont = document.getElementById('select-doc-font') as HTMLSelectElement;
+  selectDocFont?.addEventListener('change', () => {
+    docFont = selectDocFont.value as 'pretendard' | 'batang';
+    localStorage.setItem('epost_doc_font', docFont);
+    renderPreview();
+    showToast(`문서 글꼴이 ${docFont === 'pretendard' ? '프리텐다드' : '바탕체'}(으)로 변경되었습니다.`, 'info');
+  });
 
   // Initialize theme & theme button UI
   initTheme();
