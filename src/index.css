@@ -1,0 +1,149 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-ui: "Malgun Gothic", "맑은 고딕", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-doc: "Batang", "바탕", "BatangChe", serif;
+    --epost-red: #D2232A;
+    --epost-red-hover: #b81b21;
+    --epost-red-light: #fef2f2;
+  }
+
+  body {
+    font-family: var(--font-ui);
+    color: #1e293b;
+    background-color: #f1f5f9;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  html.dark body {
+    color: #f1f5f9;
+    background-color: #0b1120;
+  }
+}
+
+/* Document Paper Font */
+.font-doc {
+  font-family: var(--font-doc);
+}
+
+/* Hanging indent for official Korean document lists */
+.doc-item-indent {
+  padding-left: 1.5rem;
+  text-indent: -1.5rem;
+}
+
+.doc-subitem-indent {
+  padding-left: 2.75rem;
+  text-indent: -1.25rem;
+}
+
+/* CRITICAL: A4 paper ALWAYS displays white paper with black/dark ink regardless of theme */
+#a4-paper {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+}
+
+#a4-paper h1,
+#a4-paper h2,
+#a4-paper div,
+#a4-paper p,
+#a4-paper span,
+#a4-paper table,
+#a4-paper th,
+#a4-paper td {
+  color: #0f172a !important;
+}
+
+#a4-paper .empty-section-guide p {
+  color: #94a3b8 !important;
+  background-color: #f8fafc !important;
+}
+
+#a4-paper table th {
+  background-color: #e2e8f0 !important;
+  color: #0f172a !important;
+  border-color: #64748b !important;
+}
+
+#a4-paper table td {
+  border-color: #94a3b8 !important;
+  color: #0f172a !important;
+}
+
+/* Print styles for A4 export */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 20mm;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Hide all app chrome */
+  header,
+  #form-pane,
+  #top-action-bar,
+  #toast-container,
+  #dropzone-overlay,
+  .no-print {
+    display: none !important;
+  }
+
+  /* Make main container full width and clean */
+  main {
+    display: block !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+  }
+
+  #preview-wrapper {
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+  }
+
+  #a4-paper {
+    box-shadow: none !important;
+    border: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: #ffffff !important;
+  }
+
+  /* Hide empty section guides on print */
+  .empty-section-guide {
+    display: none !important;
+  }
+}
+
+/* Custom scrollbars for clean UI */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+html.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
